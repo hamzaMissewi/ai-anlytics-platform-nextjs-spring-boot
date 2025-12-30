@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: analytics-config
+  namespace: ai-analytics
+data:
+  application.yml: |
+    spring:
+      application:
+        name: ai-analytics-platform
+      datasource:
+        url: jdbc:postgresql://postgres-service:5432/analyticsdb
+        driver-class-name: org.postgresql.Driver
+        username: analytics
+        password: analytics123
+      jpa:
+        hibernate:
+          ddl-auto: update
+        properties:
+          hibernate:
+            dialect: org.hibernate.dialect.PostgreSQLDialect
+      kafka:
+        bootstrap-servers: kafka-service:9092
+        producer:
+          key-serializer: org.apache.kafka.common.serialization.StringSerializer
+          value-serializer: org.apache.kafka.common.serialization.StringSerializer
+        consumer:
+          group-id: analytics-group
+          key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+          value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    kafka:
+      topic:
+        events: analytics-events
+    server:
+      port: 8080
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: health,info,metrics
+
